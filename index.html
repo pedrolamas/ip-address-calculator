@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <title>IP Address Calculator</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/styles.css" />
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular-sanitize.min.js"></script>
+  </head>
+<body>
+
+<div data-ng-app="MainApp" data-ng-controller="MainController">
+  <div class="jumbotron">
+    <div class="container">
+      <h1>IP Address Calculator</h1>
+      <p>IP Address and Subnets calculator</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <form>
+
+      <div class="form-row form-group">
+        <label class="col-sm-3 col-form-label text-right">IP Class</label>
+        
+        <div class="col-sm-9">
+          <!-- <div class="form-check form-check-inline" data-ng-repeat="x in availableClasses">
+            <input class="form-check-input" type="radio" name="availableClasses" id="class{{ x.name }}" data-ng-model="$parent.selectedClass" data-ng-value="x">
+            <label class="form-check-label" for="class{{ x.name }}">{{ x.name }}</label>
+          </div> -->
+          <select class="form-control" data-ng-options="x.description for x in availableClasses" data-ng-model="selectedClass"></select>
+        </div>
+      </div>
+
+      <div class="form-row form-group">
+        <label class="col-sm-3 col-form-label text-right">IP Address</label>
+
+        <div class="col-sm-9">
+          <div class="input-group">
+            <select class="form-control" data-ng-disabled="selectedClass.disableClassA" data-ng-options="x.decimal as x.description for x in selectedClass.ranges[0]" data-ng-model="ipAddressDecimals[0]"></select>
+            <div class="input-group-prepend input-group-append">
+              <span class="input-group-text">.</span>
+            </div>
+            <select class="form-control" data-ng-disabled="selectedClass.disableClassB" data-ng-options="x.decimal as x.description for x in selectedClass.ranges[1]" data-ng-model="ipAddressDecimals[1]"></select>
+            <div class="input-group-prepend input-group-append">
+              <div class="input-group-text">.</div>
+            </div>
+            <select class="form-control" data-ng-options="x.decimal as x.description for x in selectedClass.ranges[2]" data-ng-model="ipAddressDecimals[2]"></select>
+            <div class="input-group-prepend input-group-append">
+              <span class="input-group-text">.</span>
+            </div>
+            <select class="form-control" data-ng-options="x.decimal as x.description for x in selectedClass.ranges[3]" data-ng-model="ipAddressDecimals[3]"></select>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-row form-group">
+        <label for="cidr" class="col-sm-3 col-form-label text-right">Mask bits</label>
+
+        <div class="col-sm-9">
+          <select class="form-control" data-ng-options="x.description for x in selectedClass.availableMasks" data-ng-model="selectedMask"></select>
+        </div>
+      </div>
+
+      <div class="form-row form-group">
+        <label class="col-sm-3 col-form-label text-right">Mask</label>
+        
+        <div class="col-sm-9">
+          <div class="input-group">
+            <input type="text" class="form-control" disabled="disabled" data-ng-model="selectedMask.mask[0].description" />
+            <div class="input-group-prepend input-group-append">
+              <span class="input-group-text">.</span>
+            </div>
+            <input type="text" class="form-control" disabled="disabled" data-ng-model="selectedMask.mask[1].description" />
+            <div class="input-group-prepend input-group-append">
+              <div class="input-group-text">.</div>
+            </div>
+            <input type="text" class="form-control" disabled="disabled" data-ng-model="selectedMask.mask[2].description" />
+            <div class="input-group-prepend input-group-append">
+              <span class="input-group-text">.</span>
+            </div>
+            <input type="text" class="form-control" disabled="disabled" data-ng-model="selectedMask.mask[3].description" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row form-group">
+        <label class="col-sm-3 text-right">Output format</label>
+
+        <div class="col-sm-9">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="outputFormat" id="outputFormat0" value="0" data-ng-model="outputFormat">
+            <label class="form-check-label" for="outputFormat0">Decimal</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="outputFormat" id="outputFormat1" value="1" data-ng-model="outputFormat">
+            <label class="form-check-label" for="outputFormat1">Hexadecimal</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="outputFormat" id="outputFormat2" value="2" data-ng-model="outputFormat">
+            <label class="form-check-label" for="outputFormat2">Binary</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="outputFormat" id="outputFormat3" value="3" data-ng-model="outputFormat">
+            <label class="form-check-label" for="outputFormat3">All</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row form-group">
+        <div class="col-sm-12">
+          <textarea class="form-control" readonly="readonly" rows="9" data-ng-value="outputReport"></textarea>
+        </div>
+      </div>
+      
+    </form>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <p class="text-muted">Developed by <a href="https://www.pedrolamas.com">Pedro Lamas</a>, powered by <a href="https://www.angularjs.org">AngularJS</a> and <a href="http://getbootstrap.com">Bootstrap</a>, hosted on <a href="https://pages.github.com">Github Pages</a></p>
+    </div>
+  </footer>
+</div>
+
+<script src="js/app.js"></script>
+
+</body>
+</html>
